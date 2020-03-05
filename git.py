@@ -8,14 +8,20 @@ from Bio import Phylo
 
 Entrez.email = "b5025654@newcastle.ac.uk"
     
-class single_dictionary(dict):
+class SingleDictionary(dict):
+
     def __init__(self):
-        self = defaultdict()
-    def add(self, key, value):
-        self[key] = value
-        return self
+        self.d = {}
 
-
+    def add(self, key, nestkey, value):
+        if (key not in self.d.keys()):
+            self.d[key] = {}
+        self.d[key][nestkey] = value
+        if (key in self.d.keys()):
+            raise DuplicateError ('Accession number: {s} already present'. format(key))
+    def get_d(self):
+        return self.d
+        
 
 class Error(Exception):
     """base class"""
@@ -27,75 +33,51 @@ class DuplicateError(Error):
     pass
 
 
-gene_dict = single_dictionary()
+gene_dict = SingleDictionary()
 
-def add_too_dictionary(search):
-    gene_dict.add("Description", search.description)
-    gene_dict.add("Sequence", search.seq)
-    return gene_dict
+def add_to_dictionary(entry, search):
+    gene_dict.add(entry, "Description", search.description)
+    gene_dict.add(entry, "Sequence", search.seq)
+    return gene_dict.get_d()
 
-
-nested_dict ={}
-
-
-def add_to_nested(entry, search):
-    nested_dict[entry] = add_too_dictionary(search)
-    return nested_dict
-
-def add_to_nested_update(entry, search):
-    nested_dict[entry].update({add_too_dictionary(search)})
-    return nested_dict
 
 """search NCBI with accession number"""
 def search():
     while True:
-        n = 0
-        try:
-            entry = input("Please enter an accession number: ")
-            if entry == "q":
+        entry = input("Please enter an accession number: ")
+        try:           
+            if entry == "quit":
                 break
-            elif entry !=gene_dict.keys() and n < 1:
+            elif entry !=gene_dict.keys():
                 handle = Entrez.efetch(db = "nucleotide", id = entry, idtype = "acc", rettype = "gb", retmode = "text")
                 record = SeqIO.read(handle, "genbank")
-                add_to_nested (entry, record)                
-                pprint.pprint(nested_dict)
-                n = n + 1
-            elif entry != gene_dict.keys():
-                handle = Entrez.efetch(db = "nucleotide", id = entry, idtype = "acc", rettype = "gb", retmode = "text")
-                record = SeqIO.read(handle, "genbank")
-                add_to_nested_update(entry, record)
-            elif entry == gene_dict.keys():
-                raise DuplicateError               
-        except DuplicateError:
-            print ("Accession Number already entered! Please enter a new Accession Number")
-
-    return 
+                result = add_to_dictionary(entry, record)                              
+    print(result)
+    return result 
 
 
-
-search()
+result_dict = search()
 
 
 def search_nest(d):
-    for id, info in d.items():
-        for key in info:
-            if key == "Sequence":
-                f = open( "sequences.fasta", "w")
-                f.write("> "+ id + "\n" + str(info[key]))     #writes the results into a file in fasta format so that further manipulation can be achieved 
-                f.close()
-                return
+    with open("sequences.fasta", "w") as f:
+        for id, info in d.items():
+            for key in info:
+                if key == "Sequence":
+                    f.write("> "+ id + "\n" + str(info[key]+ "\n"))     #writes the results into a file in fasta format so that further manipulation can be achieved 
+    return            
 
 
-search_nest(nested_dict)
+search_nest(result_dict)
         
 
-align = AlignIO.read("sequence.fasta", clustal)
+#align = AlignIO.read("sequence.fasta", clustal)
 
 
-tree = Phylo.read ("sequence.fasta", "Newick")
+tree = Phylo.read ("sequences.fasta", "Newick")
 
 
-Phylo.draw_ascii(tree)
+hylo.draw_ascii(tree)
 
 
 # AC004079.1 , AL121928.13
