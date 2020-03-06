@@ -1,6 +1,8 @@
 # **Advanced_programming CSC8311**
 ## Multiple sequence alignment analysis tool (proteins)
+##### database.py contains main source code
 A python application to search for proteins within the genbank database, store said proteins and perform a multiple sequence alignment once ready. The proteins are saerch for with their accession number and stored within a nested dictionary containing their description and sequence. Once all desired proteins have been entered, the application then writes each sequence to a file within the directory in a fasta format. This file is then aligned using MUSCLE and the output written to a seperate file within the directory. The final process produces a phylogenetic tree in a pdf using matplotlib and the phylo application within biopython. 
+
 
 
 ## Prerequisites 
@@ -26,6 +28,8 @@ Accession number:
 * P51494.1
 * P05231.1
 * P41323.1
+
+
 
 
 
