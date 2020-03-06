@@ -50,7 +50,7 @@ def search():
                 result = add_to_dictionary(entry, record)    # add results to nested dictionary and store as variable 
         except HTTPError:
             print("An error has occured regarding the connection to the server. Please try again")
-    return result.get_d 
+    return result 
 
 
 # function to saerch for protein sequence within the dictionary and store data as fasta format within a file
@@ -92,7 +92,7 @@ result_dict = search()
 search_nest(result_dict)
 
 # print out readable dictionary ready for comparison against later results
-result_dict.__str__()
+gene_dict.__str__()
 
 # perform multiple sequence alignment 
 multiple_alignment()
@@ -103,6 +103,5 @@ multi_align = AlignIO.read('alignment.fasta', 'fasta')
 # draw tree
 draw_tree()
 
-# close file
-multi_align.close()
+
 
