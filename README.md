@@ -16,7 +16,10 @@ python3.6 -m pip install biopython
 python3.6 -m pip install -U matplotlib
 ```
 3. MUSCLE (Multiple Sequence Alignment tool)
+first download muscle binary
+
 ```bash 
+tar -xf *muscle binary file*
 sudo apt install muscle
 ```
 ### Alterations required per user
